@@ -1,0 +1,15 @@
+[package]
+name = "huragok"
+version = "0.1.0"
+authors = ["csauve <csauve@t3hz0r.com>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+winapi = { version = "0.3.8", features = ["consoleapi"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
