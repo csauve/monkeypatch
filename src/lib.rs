@@ -23,7 +23,7 @@ extern "system" fn DllMain(_dll_module: HINSTANCE, call_reason: DWORD, _reserved
 static mut HURAGOK_RUNNING: bool = true;
 static mut HURAGOK_HANDLE: Option<JoinHandle<()>> = None;
 
-const START_ADDR: HaloAddr = 0x400000;
+const START_ADDR: HaloAddr = 0x401000;
 const END_ADDR: HaloAddr = 0x5DF000;
 const MAP_NAME_SIGNATURE: &[Option<u8>] = &[
     None,
@@ -46,15 +46,13 @@ const MAP_NAME_SIGNATURE: &[Option<u8>] = &[
 fn huragok_thread_main() {
     unsafe {
         while HURAGOK_RUNNING {
-            sleep(Duration::from_secs(10));
+            sleep(Duration::from_secs(5));
             if let Some(map_name_ptr_ptr) = find_signature(MAP_NAME_SIGNATURE, START_ADDR, END_ADDR) {
-                let map_name_ptr = read_addr::<HaloAddr>(map_name_ptr_ptr);
-                println!("found map name: {}", map_name_ptr);
-                // let map_name = CStr::from_ptr(read_addr::<*const i8>(map_name_ptr))
-                // let map_name = CStr::from_ptr(map_name_ptr as *const i8)
-                //     .to_str()
-                //     .expect("Failed to interpret map name as valid UTF8");
-                // println!("Current map name: {}", map_name);
+                let map_name_ptr: HaloAddr = read_addr(map_name_ptr_ptr);
+                let map_name = CStr::from_ptr(map_name_ptr as *const i8)
+                    .to_str()
+                    .expect("Failed to interpret map name as valid UTF8");
+                println!("Current map name: {}", map_name);
             }
         }
     }
@@ -77,7 +75,10 @@ fn revert() {
         let opt_handle = HURAGOK_HANDLE.take();
         if let Some(handle) = opt_handle {
             println!("Waiting for worker thread to shut down");
-            handle.join();
+            match handle.join() {
+                Err(_) => println!("Worker thread panicked!"),
+                _ => ()
+            }
         }
     }
 }
