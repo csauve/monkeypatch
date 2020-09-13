@@ -5,10 +5,9 @@ mod mem;
 use winapi::shared::minwindef::{HINSTANCE, DWORD, LPVOID, BOOL, TRUE};
 use winapi::um::consoleapi;
 
-use mem::{find_signature, read_addr, HaloAddr};
+use mem::{find_signature, write_addr, read_addr, deprotect, HaloAddr};
 use std::thread::{JoinHandle, spawn, sleep};
 use std::time::Duration;
-use std::ffi::{CStr};
 
 #[no_mangle]
 extern "system" fn DllMain(_dll_module: HINSTANCE, call_reason: DWORD, _reserved: LPVOID) -> BOOL {
@@ -23,36 +22,37 @@ extern "system" fn DllMain(_dll_module: HINSTANCE, call_reason: DWORD, _reserved
 static mut HURAGOK_RUNNING: bool = true;
 static mut HURAGOK_HANDLE: Option<JoinHandle<()>> = None;
 
-const START_ADDR: HaloAddr = 0x401000;
+const START_ADDR: HaloAddr = 0x400000;
 const END_ADDR: HaloAddr = 0x5DF000;
-const MAP_NAME_SIGNATURE: &[Option<u8>] = &[
-    None,
-    None,
-    None,
-    None,
-    Some(0xE8),
-    None,
-    None,
-    None,
-    None,
-    Some(0x32),
-    Some(0xC9),
-    Some(0x83),
-    Some(0xF8),
-    Some(0x13),
-    Some(0x7D),
-];
+
+const LIMIT_REPLACEMENT: f32 = 30_000.0;
+const LIMIT_SIG_VALUE: f32 = 500.0;
+// const LIMIT_SIGNATURE_ALT: &[Option<u8>] = &[
+//     //5000 be: 45 9c 40 00
+//     Some(0x00),
+//     Some(0x40),
+//     Some(0x9c),
+//     Some(0x45),
+//     //-5000 be: c5 9c 40 00
+//     Some(0x00),
+//     Some(0x40),
+//     Some(0x9c),
+//     Some(0xc5),
+// ];
 
 fn huragok_thread_main() {
+    let limit_signature: Vec<Option<u8>> = LIMIT_SIG_VALUE.to_le_bytes().iter().map(|b| Some(*b)).collect();
     unsafe {
         while HURAGOK_RUNNING {
             sleep(Duration::from_secs(5));
-            if let Some(map_name_ptr_ptr) = find_signature(MAP_NAME_SIGNATURE, START_ADDR, END_ADDR) {
-                let map_name_ptr: HaloAddr = read_addr(map_name_ptr_ptr);
-                let map_name = CStr::from_ptr(map_name_ptr as *const i8)
-                    .to_str()
-                    .expect("Failed to interpret map name as valid UTF8");
-                println!("Current map name: {}", map_name);
+            if let Some(addr) = find_signature(&limit_signature, START_ADDR, END_ADDR) {
+                deprotect(addr, std::mem::size_of::<f64>());
+                println!("Limit ptr: {}", addr);
+                write_addr(addr, &LIMIT_REPLACEMENT.to_le_bytes());
+                let limit: [u8; std::mem::size_of::<f64>()] = read_addr(addr);
+                println!("Written value: {}", f64::from_le_bytes(limit));
+            } else {
+                println!("Signature not found");
             }
         }
     }

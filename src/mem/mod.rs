@@ -1,10 +1,25 @@
 use std::ptr;
-
+use winapi::um::memoryapi::{VirtualProtect};
+use winapi::ctypes::c_void;
 pub type HaloAddr = u32;
 
 pub fn read_addr<T: Copy>(addr: HaloAddr) -> T {
     unsafe {
         ptr::read_unaligned(addr as *const T)
+    }
+}
+
+//sets PAGE_EXECUTE_READWRITE
+pub fn deprotect(addr: HaloAddr, size: usize) {
+    let mut out: u32 = 0;
+    unsafe {
+        VirtualProtect(addr as *mut c_void, size, 0x40u32, &mut out);
+    }
+}
+
+pub fn write_addr<T: Copy>(addr: HaloAddr, data: &T) {
+    unsafe {
+        ptr::write_unaligned(addr as *mut T, *data);
     }
 }
 
