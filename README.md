@@ -1,5 +1,5 @@
 # monkeywrench
-This is a stub project implementing a Windows DLL in Rust, intended to be used as a base for Halo modding experiments. Its current form is an (unsuccessful) attempt to patch the game to support camera positions outside the 5000 world unit limit.
+This project implements a Windows DLL in Rust, intended to be used as a base for Halo modding experiments. Its current form is an (unsuccessful) attempt to patch the game to support camera positions outside the 5000 world unit limit.
 
 ## Development
 Assuming Rust has been setup already and compiling from windows, a DLL can be produced at `target/release/monkeywrench.dll` using `cargo build --release`.
