@@ -19,14 +19,14 @@ extern "system" fn DllMain(_dll_module: HINSTANCE, call_reason: DWORD, _reserved
     TRUE
 }
 
-static mut HURAGOK_RUNNING: bool = true;
-static mut HURAGOK_HANDLE: Option<JoinHandle<()>> = None;
+static mut MONKEYWRENCH_RUNNING: bool = true;
+static mut MONKEYWRENCH_HANDLE: Option<JoinHandle<()>> = None;
 
 const START_ADDR: HaloAddr = 0x400000;
 const END_ADDR: HaloAddr = 0x5DF000;
 
-const LIMIT_REPLACEMENT: f32 = 30_000.0;
-const LIMIT_SIG_VALUE: f32 = 500.0;
+const LIMIT_REPLACEMENT: f32 = 600_000.0;
+const LIMIT_SIG_VALUE: f32 = 4950.0;
 // const LIMIT_SIGNATURE_ALT: &[Option<u8>] = &[
 //     //5000 be: 45 9c 40 00
 //     Some(0x00),
@@ -40,10 +40,10 @@ const LIMIT_SIG_VALUE: f32 = 500.0;
 //     Some(0xc5),
 // ];
 
-fn huragok_thread_main() {
+fn monkeywrench_thread_main() {
     let limit_signature: Vec<Option<u8>> = LIMIT_SIG_VALUE.to_le_bytes().iter().map(|b| Some(*b)).collect();
     unsafe {
-        while HURAGOK_RUNNING {
+        while MONKEYWRENCH_RUNNING {
             sleep(Duration::from_secs(5));
             if let Some(addr) = find_signature(&limit_signature, START_ADDR, END_ADDR) {
                 deprotect(addr, std::mem::size_of::<f64>());
@@ -61,18 +61,18 @@ fn huragok_thread_main() {
 fn init() {
     unsafe {
         consoleapi::AllocConsole();
-        println!("Initializing Huragok; starting worker thread");
-        HURAGOK_HANDLE = Some(spawn(|| {
-            huragok_thread_main();
+        println!("Initializing monkeywrench; starting worker thread");
+        MONKEYWRENCH_HANDLE = Some(spawn(|| {
+            monkeywrench_thread_main();
         }));
     }
 }
 
 fn revert() {
     unsafe {
-        println!("Reverting Huragok");
-        HURAGOK_RUNNING = false;
-        let opt_handle = HURAGOK_HANDLE.take();
+        println!("Reverting monkeywrench");
+        MONKEYWRENCH_RUNNING = false;
+        let opt_handle = MONKEYWRENCH_HANDLE.take();
         if let Some(handle) = opt_handle {
             println!("Waiting for worker thread to shut down");
             match handle.join() {
