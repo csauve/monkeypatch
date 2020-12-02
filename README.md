@@ -1,18 +1,11 @@
-# monkeywrench
-This project implements a Windows DLL in Rust, intended to be used as a base for Halo modding experiments. Its current form is an (unsuccessful) attempt to patch the game to support camera positions outside the 5000 world unit limit.
+# monkeypatch
+This project implements a small client mod for Halo: CE which patches game code at runtime. It compiles to a `strings.dll` which can be dropped into the games's installation directory and gets loaded by the game. This is intended to be a base for experiments rather than a more fully-featured client mod, like Chimera, HAC2, OpenSauce, or Vulpes.
+
+The project currently just increases the FOV from 70 to 90 degrees.
 
 ## Development
-Assuming Rust has been setup already and compiling from windows, a DLL can be produced at `target/release/monkeywrench.dll` using `cargo build --release`.
+Firstly, install the i686 toolchain:
+* On Windows: `rustup target add i686-pc-windows-msvc`
+* If cross-compiling from linux, ensure `mingw-w64-gcc` packages are installed and run `rustup target add i686-pc-windows-gnu`
 
-However, if cross-compiling from linux, first ensure the distro package `mingw-w64-gcc` is installed and the corresponding rust target:
-
-```sh
-rustup target add i686-pc-windows-gnu
-```
-
-Next, specify the target when building:
-
-```sh
-cargo build --release --target=i686-pc-windows-gnu
-# produces target/i686-pc-windows-gnu/release/monkeywrench.dll
-```
+The project can now be compiled with `cargo build --release --target=<toolchain>`. The binary will be found in `target/<toolchain>/release/strings.dll` and can be copied into the Halo installation.

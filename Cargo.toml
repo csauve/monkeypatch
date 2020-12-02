@@ -5,11 +5,13 @@ authors = ["csauve <csauve@t3hz0r.com>"]
 edition = "2018"
 publish = false
 
-[dependencies]
-winapi = { version = "0.3.8", features = ["consoleapi", "memoryapi"] }
-
 [lib]
 crate-type = ["cdylib"]
+name = "strings"
+path = "src/lib.rs"
 
 [profile.release]
 lto = true
+
+[dependencies]
+winapi = { version = "0.3.8", features = ["consoleapi", "memoryapi"] }
