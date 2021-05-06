@@ -1,5 +1,5 @@
 # monkeypatch
-This project implements a small client mod for Halo: CE which patches game code at runtime. It compiles to a `strings.dll` which can be dropped into the games's installation directory and gets loaded by the game. This is intended to be a base for experiments rather than a more fully-featured client mod, like Chimera, HAC2, OpenSauce, or Vulpes.
+This project implements a small proof-of-concept client mod for Halo: CE which patches game code at runtime. It compiles to a `strings.dll` which can be dropped into the games's installation directory and gets loaded by the game. This is intended to be a base for experiments and personal use rather than a fully-featured client mod, like Chimera, HAC2, OpenSauce, or Vulpes.
 
 The project currently just increases the FOV from 70 to 90 degrees.
 
