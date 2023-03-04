@@ -2,8 +2,9 @@ use std::ptr;
 use winapi::um::memoryapi::VirtualProtect;
 use winapi::ctypes::c_void;
 
+
 const START_ADDR: Addr = 0x400000;
-const END_ADDR: Addr = 0xA63000;
+const END_ADDR:   Addr = 0xD00000;
 
 pub type Addr = u32;
 

@@ -7,7 +7,7 @@ publish = false
 
 [lib]
 crate-type = ["cdylib"]
-name = "strings"
+name = "xinput1_4"
 path = "src/lib.rs"
 
 [profile.release]

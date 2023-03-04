@@ -4,7 +4,7 @@ mod mem;
 mod patches;
 
 use winapi::shared::minwindef::{HINSTANCE, DWORD, LPVOID, BOOL, TRUE};
-use winapi::um::consoleapi;
+// use winapi::um::consoleapi;
 
 #[no_mangle]
 extern "system" fn DllMain(_dll_module: HINSTANCE, call_reason: DWORD, _reserved: LPVOID) -> BOOL {
@@ -16,8 +16,8 @@ extern "system" fn DllMain(_dll_module: HINSTANCE, call_reason: DWORD, _reserved
 }
 
 fn init() {
-    unsafe {
-        consoleapi::AllocConsole();
-    }
+    // unsafe {
+    //     consoleapi::AllocConsole();
+    // }
     patches::init_fov();
 }
