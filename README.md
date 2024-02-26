@@ -1,6 +1,8 @@
 # monkeypatch
 This is a small client mod for `halo_tag_test.exe` (aka Standalone) in the Halo CE Mod Tools, which just increases the FOV. This is intended to be a base for experiments and personal use rather than a fully-featured client mod.
 
+**WARNING: you must temporarily remove this mod to use an Xbox controller in Sapien for recorded animations!**
+
 ## Installation
 Just copy `xinput1_4.dll` into the mod tools installation folder.
 
